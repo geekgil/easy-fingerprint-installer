@@ -1,36 +1,13 @@
-# Arquivos de estado do instalador
+# Installer State Files (Critical)
 .fingerprint_install_state
 .fingerprint_vendor_id
 .fingerprint_product_id
 
-# Logs e arquivos temporários
+# Logs and Temp Files
 *.log
 *.tmp
 *.swp
-*.swo
 *~
 .DS_Store
-
-# Arquivos de backup
-*.bak
-*.backup
-*_backup
-
-# Arquivos de IDE
-.vscode/
-.idea/
-*.code-workspace
-
-# Arquivos específicos do sistema
-Thumbs.db
-desktop.ini
-
-# Diretórios de teste
-test/
-tests/
-temp/
-
-# Arquivos pessoais
-notes.txt
-TODO.txt
 .env
+__pycache__/
