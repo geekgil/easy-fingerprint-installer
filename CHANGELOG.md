@@ -81,7 +81,7 @@ First stable version of Easy Fingerprint Installer, a complete and robust soluti
 
 ### 📦 Compatibility
 
-- **Systems:** Ubuntu 22.04+, Pop!_OS 22.04+, Linux Mint 21+
+- **Systems:** Ubuntu 24.04+, Pop!_OS 24.04+
 - **Devices:** Validity/Synaptics readers (USB ID: `06cb:xxxx`)
 - **Laptops:** Any laptop with Synaptics/Validity sensors (Tested on: Lenovo ThinkPad T480)
 

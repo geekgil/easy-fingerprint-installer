@@ -9,7 +9,7 @@
 #
 # Author: Gileade C. Valente (@geekgil)
 # Date: December 2025
-# Compatibility: Ubuntu 22.04+ and derivatives
+# Compatibility: Ubuntu 24.04+ and derivatives
 #
 # Features:
 # - Persistent state system (resumes from where it stopped after reboot)

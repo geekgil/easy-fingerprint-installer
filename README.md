@@ -4,7 +4,7 @@
 
 [![Version](https://img.shields.io/badge/version-1.0-blue.svg)](https://github.com/geekgil/easy-fingerprint-installer)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04+-orange.svg)](https://ubuntu.com/)
+[![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04+-orange.svg)](https://ubuntu.com/)
 [![Shell Script](https://img.shields.io/badge/shell-bash-89e051.svg)](https://www.gnu.org/software/bash/)
 
 ---
@@ -146,8 +146,7 @@ Enter your choice (0-10): _
 
 ### Tested Operating Systems
 
-- ✅ Pop!_OS 22.04+
-- ✅ Ubuntu 22.04 LTS (Jammy) (should work)
+- ✅ Pop!_OS 24.04+
 - ✅ Ubuntu 24.04 LTS (Noble) (should work)
 - 🔶 Linux Mint 21+ or other Ubuntu derivatives (may work)
 
