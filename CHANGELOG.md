@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [1.0.0] - 2025-12-21
+## [1.0.0] - 2025-12-22
 
 ### 🎉 Initial Release
 
@@ -114,4 +114,4 @@ First stable version of Easy Fingerprint Installer, a complete and robust soluti
 
 **Maintainer:** @geekgil  
 **Current Version:** 1.0.0  
-**Release Date:** December 21, 2024
+**Release Date:** December 22, 2024
