@@ -261,7 +261,7 @@ if [ "$CURRENT_STATE" -lt 4 ]; then
         SERVICE_LOGS=$(sudo journalctl -u python3-validity.service --since "1 minute ago" 2>/dev/null)
         
         # Check if it's a firmware error that needs reboot
-        if echo "$SERVICE_LOGS" | grep -qE "message type|USBTimeoutError|Operation timed out"; then
+        if echo "$SERVICE_LOGS" | grep -qE "message type|USBTimeoutError|Operation timed out|Unexpected TLS version|Traceback"; then
             print_critical "  COMPUTER RESTART REQUIRED!  "
             echo ""
             print_warning "Firmware was installed, but the reader needs a physical reset."
