@@ -460,9 +460,89 @@ fi
 ################################################################################
 
 if [ "$CURRENT_STATE" -lt 7 ]; then
-    print_step "PHASE 7: System Activation (Login/Sudo)"
+    print_step "PHASE 7: Fingerprint Sensor Configuration"
 
     echo ""
+    print_info "Let's configure the fingerprint sensor behavior."
+    echo ""
+    
+    # Configure timeout
+    print_info "TIMEOUT: How long should the sensor stay active waiting for your finger?"
+    echo "   • Recommended: 300 seconds (5 minutes) for lock screen"
+    echo "   • Minimum allowed: 10 seconds"
+    echo "   • You can use large values like 3600 (1 hour) if desired"
+    echo ""
+    read -p "Enter timeout in seconds [default: 300]: " USER_TIMEOUT
+    
+    # Use default if empty
+    if [ -z "$USER_TIMEOUT" ]; then
+        USER_TIMEOUT=300
+    fi
+    
+    # Validate timeout (minimum 10 seconds)
+    if ! [[ "$USER_TIMEOUT" =~ ^[0-9]+$ ]] || [ "$USER_TIMEOUT" -lt 10 ]; then
+        print_warning "Invalid timeout. Using default: 300 seconds"
+        USER_TIMEOUT=300
+    fi
+    
+    echo ""
+    
+    # Configure max tries
+    print_info "MAX TRIES: How many failed attempts before falling back to password?"
+    echo "   • Recommended: 3 attempts"
+    echo "   • Minimum allowed: 1 attempt"
+    echo ""
+    read -p "Enter max tries [default: 3]: " USER_MAX_TRIES
+    
+    # Use default if empty
+    if [ -z "$USER_MAX_TRIES" ]; then
+        USER_MAX_TRIES=3
+    fi
+    
+    # Validate max tries (minimum 1)
+    if ! [[ "$USER_MAX_TRIES" =~ ^[0-9]+$ ]] || [ "$USER_MAX_TRIES" -lt 1 ]; then
+        print_warning "Invalid max tries. Using default: 3"
+        USER_MAX_TRIES=3
+    fi
+    
+    echo ""
+    print_success "Configuration: timeout=${USER_TIMEOUT}s, max-tries=${USER_MAX_TRIES}"
+    echo ""
+    
+    # Apply configuration to PAM configs
+    print_info "Applying configuration to system authentication..."
+    
+    # Backup and configure /usr/share/pam-configs/fprintd (for sudo/login)
+    PAM_CONFIG_FILE="/usr/share/pam-configs/fprintd"
+    if [ -f "$PAM_CONFIG_FILE" ]; then
+        print_info "Configuring sudo/login authentication..."
+        sudo cp "$PAM_CONFIG_FILE" "$PAM_CONFIG_FILE.bak"
+        
+        # Replace the auth line with correct syntax (max-tries with hyphen, not underscore)
+        sudo sed -i "s|^\t\[success=end default=ignore\].*pam_fprintd\.so.*|\t[success=end default=ignore]\tpam_fprintd.so max-tries=${USER_MAX_TRIES} timeout=${USER_TIMEOUT}|" "$PAM_CONFIG_FILE"
+        print_success "Sudo/login configuration updated"
+    else
+        print_warning "PAM config file not found at $PAM_CONFIG_FILE"
+    fi
+    
+    # Backup and configure /etc/pam.d/gdm-fingerprint (for lock screen)
+    GDM_CONFIG_FILE="/etc/pam.d/gdm-fingerprint"
+    if [ -f "$GDM_CONFIG_FILE" ]; then
+        print_info "Configuring lock screen authentication..."
+        sudo cp "$GDM_CONFIG_FILE" "$GDM_CONFIG_FILE.bak"
+        
+        # Replace the auth line to add our parameters
+        sudo sed -i "s|^auth\trequired\tpam_fprintd\.so.*|auth\trequired\tpam_fprintd.so max-tries=${USER_MAX_TRIES} timeout=${USER_TIMEOUT}|" "$GDM_CONFIG_FILE"
+        print_success "Lock screen configuration updated"
+    else
+        print_warning "GDM config file not found at $GDM_CONFIG_FILE"
+    fi
+    
+    echo ""
+    print_success "Fingerprint sensor configuration applied successfully!"
+    echo ""
+    
+    # Now ask about PAM activation
     print_warning "IMPORTANT: Integration with login and sudo is OPTIONAL."
     echo ""
     print_info "To enable fingerprint authentication on the system:"

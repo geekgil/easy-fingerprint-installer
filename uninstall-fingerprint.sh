@@ -96,10 +96,48 @@ sudo systemctl disable python3-validity.service 2>/dev/null || print_warning "Se
 print_success "Services disabled"
 
 ################################################################################
-# PHASE 3: REMOVE FROM PAM
+# PHASE 3: REMOVE FROM PAM AND RESTORE CONFIGURATIONS
 ################################################################################
 
 print_step "PHASE 3: Removing Fingerprint Authentication from System"
+
+# First, restore customized configuration files to their defaults
+print_info "Restoring customized configuration files..."
+
+# Restore /etc/pam.d/gdm-fingerprint (lock screen)
+GDM_CONFIG_FILE="/etc/pam.d/gdm-fingerprint"
+if [ -f "$GDM_CONFIG_FILE" ]; then
+    print_info "Cleaning lock screen configuration..."
+    
+    # Check if file was customized (has timeout or max-tries parameters)
+    if grep -q "pam_fprintd.so.*\(timeout\|max-tries\)" "$GDM_CONFIG_FILE" 2>/dev/null; then
+        # Remove the custom parameters, leaving only the module name
+        sudo sed -i 's|^auth\trequired\tpam_fprintd\.so.*|auth\trequired\tpam_fprintd.so|' "$GDM_CONFIG_FILE"
+        print_success "Lock screen configuration restored to default"
+    else
+        print_info "Lock screen configuration was already default"
+    fi
+    
+    # Remove backup if it exists
+    if [ -f "$GDM_CONFIG_FILE.bak" ]; then
+        sudo rm -f "$GDM_CONFIG_FILE.bak"
+        print_info "Removed backup file: $GDM_CONFIG_FILE.bak"
+    fi
+else
+    print_info "GDM config file not found (already clean)"
+fi
+
+echo ""
+
+# Restore /usr/share/pam-configs/fprintd (sudo/login)
+PAM_CONFIG_FILE="/usr/share/pam-configs/fprintd"
+if [ -f "$PAM_CONFIG_FILE.bak" ]; then
+    print_info "Restoring PAM config from backup..."
+    sudo mv "$PAM_CONFIG_FILE.bak" "$PAM_CONFIG_FILE"
+    print_success "PAM config restored from backup"
+fi
+
+echo ""
 
 print_info "Checking current PAM configuration..."
 if grep -q "pam_fprintd.so" /etc/pam.d/common-auth 2>/dev/null; then
@@ -181,6 +219,18 @@ rm -f "$HOME/.fingerprint_install_state"
 rm -f "$HOME/.fingerprint_vendor_id"
 rm -f "$HOME/.fingerprint_product_id"
 print_success "State files removed"
+
+# Final cleanup: Remove any remaining backup files from PAM configuration
+print_info "Removing any remaining PAM configuration backups..."
+if [ -f "/usr/share/pam-configs/fprintd.bak" ]; then
+    sudo rm -f "/usr/share/pam-configs/fprintd.bak"
+    print_success "Removed: /usr/share/pam-configs/fprintd.bak"
+fi
+
+if [ -f "/etc/pam.d/gdm-fingerprint.bak" ]; then
+    sudo rm -f "/etc/pam.d/gdm-fingerprint.bak"
+    print_success "Removed: /etc/pam.d/gdm-fingerprint.bak"
+fi
 
 print_success "Cleanup completed"
 
