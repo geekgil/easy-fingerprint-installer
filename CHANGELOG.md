@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.0] - 2025-12-23
+
+### ✨ Added
+
+- **Interactive Sensor Configuration** in Phase 7
+  - User can now customize fingerprint sensor timeout (default: 300s / 5 minutes)
+  - User can configure max authentication attempts before fallback to password (default: 3)
+  - Input validation ensures minimum values (timeout >= 10s, max-tries >= 1)
+  - Fixes common issue where sensor would turn off too quickly on lock screen
+
+- **Enhanced PAM Configuration**
+  - Script now modifies `/usr/share/pam-configs/fprintd` for sudo/login authentication
+  - Script now modifies `/etc/pam.d/gdm-fingerprint` for lock screen authentication
+  - Creates backup files (`.bak`) before making changes
+  - Ensures consistent behavior across all authentication scenarios
+
+### 🐛 Fixed
+
+- Fixed PAM configuration syntax bug: changed `max_tries` to `max-tries` (proper hyphen syntax)
+  - Previous configuration used underscore which was being ignored by `pam_fprintd`
+  - This explains why users were getting 3 attempts despite config showing `max_tries=1`
+  
+### 🔧 Changed
+
+- **Phase 7** renamed from "System Activation (Login/Sudo)" to "Fingerprint Sensor Configuration"
+- Enhanced uninstaller to properly restore customized PAM configuration files
+  - Removes custom parameters from `/etc/pam.d/gdm-fingerprint`
+  - Restores backup files when available
+  - Cleans up all `.bak` files in Phase 5
+
+### 📚 Documentation
+
+- Updated README.md with new "Customizable Sensor Behavior" feature
+- Updated Phase 7 description in "Detailed Usage" section
+- Added `/etc/pam.d/gdm-fingerprint` and `/usr/share/pam-configs/fprintd` to "Modified System Files" list
+
+---
+
 ## [1.0.1] - 2025-12-23
 
 ### 🐛 Fixed
@@ -125,5 +163,5 @@ First stable version of Easy Fingerprint Installer, a complete and robust soluti
 ---
 
 **Maintainer:** @geekgil  
-**Current Version:** 1.0.0  
-**Release Date:** December 22, 2024
+**Current Version:** 1.1.0  
+**Release Date:** December 23, 2025

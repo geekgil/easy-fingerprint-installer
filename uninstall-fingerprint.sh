@@ -1,6 +1,7 @@
 #!/bin/bash
 ################################################################################
 # Easy Fingerprint Installer - Uninstaller for Linux
+# Version 1.1.0
 ################################################################################
 #
 # This script completely removes the python-validity + open-fprintd driver
@@ -52,7 +53,7 @@ fi
 clear
 echo "╔════════════════════════════════════════════════════════════════╗"
 echo "║       Easy Fingerprint Installer - Uninstaller                ║"
-echo "║                                                                ║"
+echo "║                        Version 1.1.0                           ║"
 echo "║  This script will completely remove python-validity            ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""

@@ -2,7 +2,7 @@
 
 > Automated and robust installation of python-validity driver for Synaptics fingerprint readers on Linux laptops
 
-[![Version](https://img.shields.io/badge/version-1.0-blue.svg)](https://github.com/geekgil/easy-fingerprint-installer)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/geekgil/easy-fingerprint-installer)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04+-orange.svg)](https://ubuntu.com/)
 [![Shell Script](https://img.shields.io/badge/shell-bash-89e051.svg)](https://www.gnu.org/software/bash/)
@@ -77,7 +77,7 @@ chmod +x install-fingerprint.sh
 ```
 ╔════════════════════════════════════════════════════════════════╗
 ║       Easy Fingerprint Installer for Linux                     ║
-║                          Version 1.0                           ║
+║                          Version 1.1.0                         ║
 ║  Stack: python-validity + open-fprintd                         ║
 ╚════════════════════════════════════════════════════════════════╝
 
@@ -108,6 +108,7 @@ chmod +x install-fingerprint.sh
 | **Persistent State System** | Resumes installation from where it stopped (even after reboot) |
 | **Intelligent Reboot Detection** | Identifies firmware errors (`USBTimeoutError`, `message type` errors) and clearly warns when reboot is necessary |
 | **Interactive Enrollment Menu** | Friendly interface to enroll as many fingers as you want |
+| **Customizable Sensor Behavior** | Configure timeout (default 5 min) and max attempts to prevent premature sensor disable on lock screen |
 | **Automatic Sanity Check** | Validates system consistency before proceeding (detects missing packages) |
 | **Clean Uninstall** | Completely removes all state files and configurations |
 | **Phased Installation** | 7 well-defined phases with validation at each step |
@@ -191,7 +192,7 @@ The script executes **7 phases**:
 4. **Initialization and Verification** - Tests services and detects if reboot is needed
 5. **Fingerprint Enrollment** - Interactive menu to enroll fingers
 6. **Verification Test** - Validates that the reader recognizes your fingerprint
-7. **System Activation** - (Optional) Integrates with login/sudo via PAM
+7. **Fingerprint Sensor Configuration** - Configure timeout (how long sensor stays active) and max attempts before falling back to password. Defaults: 300 seconds (5 minutes) and 3 attempts. Then optionally integrates with login/sudo via PAM
 
 ### If the Script Asks for Reboot
 
@@ -419,6 +420,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed contribution guide.
 ```
 /etc/udev/rules.d/99-fingerprint-power.rules  # Power rule
 /etc/pam.d/common-auth                        # (Optional) PAM config
+/etc/pam.d/gdm-fingerprint                    # Lock screen PAM config (timeout/max-tries)
+/usr/share/pam-configs/fprintd                # PAM module config (timeout/max-tries)
 /usr/lib/systemd/system/python3-validity.service
 /usr/share/python-validity/                   # Extracted firmware
 ```
