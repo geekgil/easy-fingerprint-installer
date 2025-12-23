@@ -1,7 +1,7 @@
 #!/bin/bash
 ################################################################################
 # Easy Fingerprint Installer for Linux (Validity/Synaptics)
-# Version 1.0
+# Version 1.0.1
 ################################################################################
 #
 # This script installs and configures the python-validity + open-fprintd driver
@@ -91,7 +91,7 @@ fi
 clear
 echo "╔════════════════════════════════════════════════════════════════╗"
 echo "║       Easy Fingerprint Installer for Linux                    ║"
-echo "║                          Version 1.0                           ║"
+echo "║                        Version 1.0.1                           ║"
 echo "║  Stack: python-validity + open-fprintd                         ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""

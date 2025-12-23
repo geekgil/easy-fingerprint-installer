@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.0.1] - 2025-12-23
+
+### 🐛 Fixed
+
+- Improved reboot detection logic in `install-fingerprint.sh` to correctly handle `Unexpected TLS version` and other Python `Traceback` errors during the initialization of `python3-validity`. This prevents the script from failing and guides the user to perform the necessary system reboot.
+
+---
+
 ## [1.0.0] - 2025-12-22
 
 ### 🎉 Initial Release

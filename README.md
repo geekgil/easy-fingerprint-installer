@@ -345,6 +345,29 @@ rm ~/.fingerprint_install_state
 ./install-fingerprint.sh
 ```
 
+### Problem: `Unexpected TLS version` Error
+
+**Symptoms:**
+```
+Exception: Unexpected TLS version 4 0
+```
+
+**Cause:** The fingerprint reader is in an inconsistent state or protocol mismatch. This commonly occurs after a fresh installation or when the device firmware hasn't been properly initialized.
+
+**Solution:**
+```bash
+# 1. The script should automatically detect this and ask for reboot
+# If not, manually restart your computer
+sudo reboot
+
+# 2. After restarting, run the installer again
+./install-fingerprint.sh
+
+# 3. The script will automatically resume from where it stopped
+```
+
+> 💡 **Note:** This error is now automatically detected by the installer (v1.0.1+), which will guide you through the necessary reboot process.
+
 ---
 
 ## 🤝 Contributing
