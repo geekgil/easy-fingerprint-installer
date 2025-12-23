@@ -45,11 +45,11 @@ print_success() {
 }
 
 print_warning() {
-    echo -e "${YELLOW}[AVISO]${NC} $1"
+    echo -e "${YELLOW}[WARNING]${NC} $1"
 }
 
 print_error() {
-    echo -e "${RED}[ERRO]${NC} $1"
+    echo -e "${RED}[ERROR]${NC} $1"
 }
 
 print_step() {
