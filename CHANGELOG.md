@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.1] - 2026-01-14
+
+### 🐛 Fixed
+
+- **Critical Bug: Duplicate PAM entries in `pam-auth-update`**
+  - Fixed issue where backup files were created in `/usr/share/pam-configs/` causing duplicate "Fingerprint authentication" entries
+  - The old backup strategy (`fprintd.bak` in system directories) was being read by PAM as a separate configuration
+  - This caused confusion and potential authentication issues for users
+
+### 🔧 Changed
+
+- **New Backup Strategy: Centralized and Persistent**
+  - All backup files now stored in `~/.fingerprint_backups/` instead of system directories
+  - Backup files include timestamp: `fprintd.bak.YYYYMMDD_HHMMSS`
+  - Both `fprintd` and `gdm-fingerprint` configs now backed up to same location
+  
+- **Enhanced Uninstaller**
+  - Uninstaller now checks `~/.fingerprint_backups/` for restoration
+  - Added interactive prompt to optionally remove backup directory during uninstall
+  - Removed legacy code that searched for old-style `.bak` files in system directories
+
+### 📚 Documentation
+
+- Updated internal code comments to reflect new backup location
+- Documented backup strategy change in CHANGELOG
+
+---
+
 ## [1.1.0] - 2025-12-23
 
 ### ✨ Added
@@ -163,5 +191,5 @@ First stable version of Easy Fingerprint Installer, a complete and robust soluti
 ---
 
 **Maintainer:** @geekgil  
-**Current Version:** 1.1.0  
-**Release Date:** December 23, 2025
+**Current Version:** 1.1.1  
+**Release Date:** January 14, 2026
