@@ -22,6 +22,9 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Backup directory (same as installer)
+BACKUP_DIR="$HOME/.fingerprint_backups"
+
 # Function to print with color
 print_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -118,12 +121,7 @@ if [ -f "$GDM_CONFIG_FILE" ]; then
     else
         print_info "Lock screen configuration was already default"
     fi
-    
-    # Remove backup if it exists
-    if [ -f "$GDM_CONFIG_FILE.bak" ]; then
-        sudo rm -f "$GDM_CONFIG_FILE.bak"
-        print_info "Removed backup file: $GDM_CONFIG_FILE.bak"
-    fi
+
 else
     print_info "GDM config file not found (already clean)"
 fi
@@ -132,10 +130,21 @@ echo ""
 
 # Restore /usr/share/pam-configs/fprintd (sudo/login)
 PAM_CONFIG_FILE="/usr/share/pam-configs/fprintd"
-if [ -f "$PAM_CONFIG_FILE.bak" ]; then
-    print_info "Restoring PAM config from backup..."
-    sudo mv "$PAM_CONFIG_FILE.bak" "$PAM_CONFIG_FILE"
-    print_success "PAM config restored from backup"
+print_info "Checking for PAM config backup..."
+
+# First, check if there's a backup in backup location ($BACKUP_DIR)
+if [ -d "$BACKUP_DIR" ]; then
+    LATEST_BACKUP=$(ls -t "$BACKUP_DIR"/fprintd.bak.* 2>/dev/null | head -n1)
+    if [ -n "$LATEST_BACKUP" ]; then
+        print_info "Found backup in $BACKUP_DIR"
+        print_info "Restoring PAM config from: $(basename "$LATEST_BACKUP")"
+        sudo cp "$LATEST_BACKUP" "$PAM_CONFIG_FILE"
+        print_success "PAM config restored from backup"
+    else
+        print_info "No backup found in $BACKUP_DIR"
+    fi
+else
+    print_info "No backups found to restore"
 fi
 
 echo ""
@@ -221,16 +230,26 @@ rm -f "$HOME/.fingerprint_vendor_id"
 rm -f "$HOME/.fingerprint_product_id"
 print_success "State files removed"
 
-# Final cleanup: Remove any remaining backup files from PAM configuration
-print_info "Removing any remaining PAM configuration backups..."
-if [ -f "/usr/share/pam-configs/fprintd.bak" ]; then
-    sudo rm -f "/usr/share/pam-configs/fprintd.bak"
-    print_success "Removed: /usr/share/pam-configs/fprintd.bak"
-fi
-
-if [ -f "/etc/pam.d/gdm-fingerprint.bak" ]; then
-    sudo rm -f "/etc/pam.d/gdm-fingerprint.bak"
-    print_success "Removed: /etc/pam.d/gdm-fingerprint.bak"
+# Remove backup directory if it exists
+if [ -d "$BACKUP_DIR" ]; then
+    echo ""
+    print_info "Found backup directory: $BACKUP_DIR"
+    BACKUP_COUNT=$(ls -1 "$BACKUP_DIR" 2>/dev/null | wc -l)
+    if [ "$BACKUP_COUNT" -gt 0 ]; then
+        print_info "Contains $BACKUP_COUNT backup file(s)"
+    fi
+    echo ""
+    read -p "Do you want to remove the backup directory? (y/N): " REMOVE_BACKUPS
+    
+    if [[ "$REMOVE_BACKUPS" =~ ^[YySs]$ ]]; then
+        rm -rf "$BACKUP_DIR"
+        print_success "Backup directory removed"
+    else
+        print_info "Keeping backup directory at: $BACKUP_DIR"
+        print_info "You can manually remove it later if needed"
+    fi
+else
+    print_info "No backup directory found"
 fi
 
 print_success "Cleanup completed"

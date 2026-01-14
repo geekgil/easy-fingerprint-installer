@@ -35,6 +35,9 @@ NC='\033[0m' # No Color
 # State file
 STATE_FILE="$HOME/.fingerprint_install_state"
 
+# Backup directory
+BACKUP_DIR="$HOME/.fingerprint_backups"
+
 # Print functions
 print_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -512,13 +515,17 @@ if [ "$CURRENT_STATE" -lt 7 ]; then
     # Apply configuration to PAM configs
     print_info "Applying configuration to system authentication..."
     
+    # Create backup directory if it doesn't exist
+    mkdir -p "$BACKUP_DIR"
+    
     # Backup and configure /usr/share/pam-configs/fprintd (for sudo/login)
     PAM_CONFIG_FILE="/usr/share/pam-configs/fprintd"
     if [ -f "$PAM_CONFIG_FILE" ]; then
         print_info "Configuring sudo/login authentication..."
-        sudo cp "$PAM_CONFIG_FILE" "$PAM_CONFIG_FILE.bak"
+        # Save backup to defined location
+        sudo cp "$PAM_CONFIG_FILE" "$BACKUP_DIR/fprintd.bak.$(date +%Y%m%d_%H%M%S)"
         
-        # Replace the auth line with correct syntax (max-tries with hyphen, not underscore)
+        # Replace the auth line
         sudo sed -i "s|^\t\[success=end default=ignore\].*pam_fprintd\.so.*|\t[success=end default=ignore]\tpam_fprintd.so max-tries=${USER_MAX_TRIES} timeout=${USER_TIMEOUT}|" "$PAM_CONFIG_FILE"
         print_success "Sudo/login configuration updated"
     else
@@ -529,7 +536,9 @@ if [ "$CURRENT_STATE" -lt 7 ]; then
     GDM_CONFIG_FILE="/etc/pam.d/gdm-fingerprint"
     if [ -f "$GDM_CONFIG_FILE" ]; then
         print_info "Configuring lock screen authentication..."
-        sudo cp "$GDM_CONFIG_FILE" "$GDM_CONFIG_FILE.bak"
+        
+        # Save backup to defined location
+        sudo cp "$GDM_CONFIG_FILE" "$BACKUP_DIR/gdm-fingerprint.bak.$(date +%Y%m%d_%H%M%S)"
         
         # Replace the auth line to add our parameters
         sudo sed -i "s|^auth\trequired\tpam_fprintd\.so.*|auth\trequired\tpam_fprintd.so max-tries=${USER_MAX_TRIES} timeout=${USER_TIMEOUT}|" "$GDM_CONFIG_FILE"
